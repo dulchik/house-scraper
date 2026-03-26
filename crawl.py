@@ -32,8 +32,11 @@ def get_addresses():
     addresses = []
 
     for result in results:
-        span = result.find_all("span", {"class": "truncate"})
-        addresses.append(" ".join(span[0].text.split()))
+        street = result.find_all("span", {"class": "truncate"})
+        place = result.find_all("div", {"class": "truncate"})
+
+        address = " ".join(street[0].text.split()) + " " + place[0].text.strip()
+        addresses.append(address)
 
     return addresses
 
