@@ -40,3 +40,31 @@ def get_addresses():
 
     return addresses
 
+def get_prices_and_details():
+    results = soup.find_all("div", {"class": "@container"})
+    prices = []
+    uls = []
+
+    for result in results:
+        details = result.find_all("div", {"class": "mt-2"})
+        price = details[0].find_all("div", {"class": "truncate"})
+
+        ul = details[0].find_all("ul")
+        uls.append(ul)
+
+        prices.append(price[0].text)
+
+    details = []
+    for ul in uls:
+        for li in ul:
+            li_spans = li.find_all("span")
+            if len(li_spans) > 3:
+                li_spans.pop(1)
+
+            spans = []
+            for li_span in li_spans:
+                spans.append(li_span.text)
+
+            details.append(spans)
+
+    return prices, details
