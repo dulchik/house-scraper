@@ -1,25 +1,38 @@
 from typing import Final
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
-from crawl import get_listings
+from crawl import get_listings, get_addresses, get_prices_and_details
 import asyncio
 from dotenv import load_dotenv
 import os
 
 
 load_dotenv()
-
 TOKEN = os.getenv("TOKEN")
-URL = os.getenv("URL")
+
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Hello, I'm Rental-scraper!")
 
 async def list_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    listings_links = get_listings(URL)
+    listings_links = get_listings()
+    addresses = get_addresses()
+    prices, details = get_prices_and_details()
 
-    for link in listings_links:
-        await update.message.reply_text(f"https://www.funda.nl/{link}\n\n" )
+
+    for i in range(len(listings_links)):
+        await update.message.reply_text(f"""
+address: {addresses[i]}
+
+price: {prices[i].replace("/", "/\u200b")}
+
+square meters: {details[i][0]}
+
+bedrooms: {details[i][1]}
+
+energy label: {details[i][2]}
+
+https://www.funda.nl/{listings_links[i]}""" )
         await asyncio.sleep(0.5)
 
 if __name__ == '__main__':
